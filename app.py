@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from google_sheets_watcher import run_update_check
 
 load_dotenv()
-app = Flask(_name_)
+app = Flask(__name__)
 
 def get_db_connection():
     # In the cloud, the DATABASE_URL is provided automatically by the environment
