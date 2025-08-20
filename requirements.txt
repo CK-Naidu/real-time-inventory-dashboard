@@ -1,9 +1,2 @@
 Flask
-python-dotenv
 gunicorn
-psycopg2-binary
-requests
-pandas
-openpyxl
-gspread
-google-auth-oauthlib
