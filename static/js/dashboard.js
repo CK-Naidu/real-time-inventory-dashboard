@@ -1,29 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    // Fetch and render Weather Impact Chart
-    const weatherRes = await fetch('/api/kpi/weather-impact');
-    if (!weatherRes.ok) throw new Error(`Weather Impact API error: ${weatherRes.status}`);
-    const weatherData = await weatherRes.json();
-    if (!Array.isArray(weatherData)) throw new Error('Weather Impact data is not an array');
-    const weatherLabels = weatherData.map(item => item.weathercondition); // Corrected
-    const weatherValues = weatherData.map(item => item.avgunitsold);      // Corrected
-
-    new Chart(document.getElementById('weatherImpactChart'), {
-      type: 'bar',
-      data: {
-        labels: weatherLabels,
-        datasets: [{
-          label: 'Average Units Sold',
-          data: weatherValues,
-          backgroundColor: 'rgba(75, 192, 192, 0.6)',
-          borderColor: 'rgba(75, 192, 192, 1)',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        scales: { y: { beginAtZero: true } }
-      }
-    });
 
     // Fetch and render Sales by Region Chart
     const regionRes = await fetch('/api/kpi/sales-by-region');
