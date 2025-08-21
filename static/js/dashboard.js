@@ -2,9 +2,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         const response = await fetch('/api/kpi/weather-impact');
         const data = await response.json();
-        const labels = data.map(item => item.weathercondition);
+        const labels = data.map(item => item.weathercondition);   // lowercase keys from JSON
         const values = data.map(item => item.avgunitsold);
-        
+
         new Chart(document.getElementById('weatherImpactChart'), {
             type: 'bar',
             data: {
@@ -16,6 +16,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                     borderColor: 'rgba(75,192,192,1)',
                     borderWidth: 1
                 }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
             }
         });
     } catch (error) {
