@@ -16,7 +16,7 @@ def run_update_check():
     
     df = pd.read_csv(CSV_FILE)
     
-    # Normalize column names: strip whitespace, replace spaces and slashes with underscores
+    # Normalize column names
     df.columns = df.columns.str.strip().str.replace(" ", "_").str.replace("/", "_")
     print("CSV columns loaded after normalization:", df.columns.tolist())
 
@@ -29,35 +29,35 @@ def run_update_check():
     try:
         cursor.execute("TRUNCATE TABLE InventoryTransactions, Stores, Products, Categories, Regions RESTART IDENTITY CASCADE;")
         
-        # Insert unique regions with conflict handling
+        # Insert unique regions
         regions = {name: i+1 for i, name in enumerate(df['Region'].unique())}
         cursor.executemany("""
             INSERT INTO Regions (RegionName) VALUES (%s)
             ON CONFLICT (RegionName) DO NOTHING;
         """, [(r,) for r in regions.keys()])
         
-        # Insert categories with conflict handling
+        # Insert categories
         categories = {name: i+1 for i, name in enumerate(df['Category'].unique())}
         cursor.executemany("""
             INSERT INTO Categories (CategoryName) VALUES (%s)
             ON CONFLICT (CategoryName) DO NOTHING;
         """, [(c,) for c in categories.keys()])
         
-        # Insert stores with conflict handling
+        # Insert stores
         stores_df = df[['Store_ID', 'Region']].drop_duplicates()
         cursor.executemany("""
             INSERT INTO Stores (StoreID, RegionID) VALUES (%s, %s)
             ON CONFLICT (StoreID) DO NOTHING;
         """, [(row.Store_ID, regions[row.Region]) for row in stores_df.itertuples()])
         
-        # Insert products with conflict handling
+        # Insert products
         products_df = df[['Product_ID', 'Category']].drop_duplicates()
         cursor.executemany("""
             INSERT INTO Products (ProductID, CategoryID) VALUES (%s, %s)
             ON CONFLICT (ProductID) DO NOTHING;
         """, [(row.Product_ID, categories[row.Category]) for row in products_df.itertuples()])
         
-        # Inventory transactions insert (no conflict handling required)
+        # Insert inventory transactions
         data = [tuple(row) for row in df[['Date','Store_ID','Product_ID','Inventory_Level',
                                           'Units_Sold','Units_Ordered','Demand_Forecast','Price',
                                           'Discount','Weather_Condition','Holiday_Promotion',
@@ -85,4 +85,3 @@ if __name__ == "__main__":
         run_update_check()
         print("Sleeping 15 minutes...")
         time.sleep(900)
-
