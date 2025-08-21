@@ -16,9 +16,12 @@ def run_update_check():
     
     df = pd.read_csv(CSV_FILE)
     
-    # Normalize column names
+    # Normalize column names: replace spaces and slashes with underscores
     df.columns = df.columns.str.strip().str.replace(" ", "_").str.replace("/", "_")
     print("CSV columns loaded after normalization:", df.columns.tolist())
+
+    # Convert Date column to proper datetime with day-first format
+    df['Date'] = pd.to_datetime(df['Date'], dayfirst=True).dt.date
 
     if df.empty:
         print("No data found in CSV.")
