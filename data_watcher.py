@@ -15,13 +15,18 @@ def run_update_check():
         return
     
     df = pd.read_csv(CSV_FILE)
+    
+    # Debug: print column names loaded from CSV
+    print("CSV columns loaded:", df.columns.tolist())
+    # Strip whitespace from column headers
+    df.columns = df.columns.str.strip()
+
     if df.empty:
         print("No data found in CSV.")
         return
     
     conn = get_db_connection()
     cursor = conn.cursor()
-
     try:
         cursor.execute("TRUNCATE TABLE InventoryTransactions, Stores, Products, Categories, Regions RESTART IDENTITY CASCADE;")
         
