@@ -4,17 +4,19 @@
     <meta charset="UTF-8">
     <title>Inventory Dashboard</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f7f6; padding: 2em; }
-        .chart-card { background-color: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 1.5em; max-width: 1200px; margin: 2em auto; }
-        h1, h2 { color: #333; }
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; padding: 2em; }
+        .chart-card { background: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 1.5em; max-width: 1200px; margin: 2em auto; }
+        footer { text-align: center; margin-top: 3em; font-size: 0.9em; color: #555; }
     </style>
 </head>
 <body>
     <div class="chart-card">
-        <h1 style="text-align: center;">Urban Retail Co. Analytics Dashboard</h1>
-        <h2>Weather's Impact on Sales</h2>
+        <h1 style="text-align: center;">📈 Real-Time Inventory Analytics Dashboard</h1>
+        <h2>Weather’s Impact on Sales</h2>
         <canvas id="weatherImpactChart"></canvas>
     </div>
+    <footer>Project developed by <strong>Kandi Chenna Kesava Naidu</strong></footer>
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="/static/js/dashboard.js"></script>
 </body>
