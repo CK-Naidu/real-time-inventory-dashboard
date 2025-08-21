@@ -1,8 +1,10 @@
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    // Weather Impact Chart
+    // Fetch and render Weather Impact Chart
     const weatherRes = await fetch('/api/kpi/weather-impact');
+    if (!weatherRes.ok) throw new Error(`Weather Impact API error: ${weatherRes.status}`);
     const weatherData = await weatherRes.json();
+    if (!Array.isArray(weatherData)) throw new Error('Weather Impact data is not an array');
     const weatherLabels = weatherData.map(item => item.WeatherCondition);
     const weatherValues = weatherData.map(item => item.AvgUnitsSold);
 
@@ -23,9 +25,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
 
-    // Sales by Region Chart
+    // Fetch and render Sales by Region Chart
     const regionRes = await fetch('/api/kpi/sales-by-region');
+    if (!regionRes.ok) throw new Error(`Sales by Region API error: ${regionRes.status}`);
     const regionData = await regionRes.json();
+    if (!Array.isArray(regionData)) throw new Error('Sales by Region data is not an array');
     const regionLabels = regionData.map(item => item.Region);
     const regionValues = regionData.map(item => item.TotalUnitsSold);
 
@@ -48,9 +52,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
 
-    // Sales by Category Chart
+    // Fetch and render Sales by Category Chart
     const categoryRes = await fetch('/api/kpi/sales-by-category');
+    if (!categoryRes.ok) throw new Error(`Sales by Category API error: ${categoryRes.status}`);
     const categoryData = await categoryRes.json();
+    if (!Array.isArray(categoryData)) throw new Error('Sales by Category data is not an array');
     const categoryLabels = categoryData.map(item => item.Category);
     const categoryValues = categoryData.map(item => item.TotalUnitsSold);
 
@@ -73,9 +79,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
 
-    // Sales Trend Chart
+    // Fetch and render Sales Trend Chart
     const trendRes = await fetch('/api/kpi/sales-trend');
+    if (!trendRes.ok) throw new Error(`Sales Trend API error: ${trendRes.status}`);
     const trendData = await trendRes.json();
+    if (!Array.isArray(trendData)) throw new Error('Sales Trend data is not an array');
     const trendLabels = trendData.map(item => item.SaleDate);
     const trendValues = trendData.map(item => item.TotalUnitsSold);
 
