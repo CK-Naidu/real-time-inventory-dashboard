@@ -2,13 +2,12 @@ import os
 import psycopg2
 from flask import Flask, jsonify, render_template
 from dotenv import load_dotenv
-from google_sheets_watcher import run_update_check
 
 load_dotenv()
 app = Flask(_name_)
 
 def get_db_connection():
-    # In the cloud, the DATABASE_URL is provided automatically by the environment
+    # Railway provides the database URL as an environment variable
     return psycopg2.connect(os.getenv('DATABASE_URL'))
 
 @app.route("/")
@@ -29,11 +28,6 @@ def get_weather_impact():
     conn.close()
     return jsonify(result)
 
-# This special endpoint will be called by our automated scheduler
-@app.route("/run-check", methods=["POST"])
-def run_check_endpoint():
-    message = run_update_check()
-    return message, 200
-
 if _name_ == "_main_":
+    # The port is set by Railway's PORT environment variable
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
