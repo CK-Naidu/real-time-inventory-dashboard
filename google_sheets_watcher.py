@@ -1,20 +1,31 @@
 import os
-import io
+import json
+import time
 import pandas as pd
 import psycopg2
 import gspread
 
 # --- Configuration ---
 GOOGLE_SHEET_NAME = os.getenv('GOOGLE_SHEET_NAME', 'InventoryDataSource')
+GCP_CREDENTIALS_JSON = os.getenv('GCP_CREDENTIALS_JSON')
 
 def get_db_connection():
     return psycopg2.connect(os.getenv('DATABASE_URL'))
 
 def run_update_check():
+    """
+    Performs a single check on Google Sheets and re-populates the entire database.
+    """
     print("--- Starting Google Sheets data sync ---")
     try:
-        # This uses the application's default credentials in the cloud
-        gc = gspread.service_account()
+        # 1. Authenticate with Google Sheets using credentials from environment variable
+        if not GCP_CREDENTIALS_JSON:
+            print("Error: GCP_CREDENTIALS_JSON environment variable not found.")
+            return
+
+        gcp_credentials_dict = json.loads(GCP_CREDENTIALS_JSON)
+        gc = gspread.service_account_from_dict(gcp_credentials_dict)
+
         spreadsheet = gc.open(GOOGLE_SHEET_NAME)
         worksheet = spreadsheet.sheet1
 
@@ -23,8 +34,10 @@ def run_update_check():
         df = pd.DataFrame(records)
 
         if df.empty:
-            return "No data found in Google Sheet."
+            print("No data found in Google Sheet.")
+            return
 
+        # --- 2. ETL (Extract, Transform, Load) Logic ---
         df.columns = [col.replace(' ', '').replace('/', '') for col in df.columns]
 
         conn = get_db_connection()
@@ -60,14 +73,21 @@ def run_update_check():
 
         conn.commit()
         print("--- Database update successful! ---")
-        return "Database update successful."
 
     except gspread.exceptions.SpreadsheetNotFound:
-        return f"Error: Spreadsheet '{GOOGLE_SHEET_NAME}' not found. Make sure it's shared with your service account."
+        print(f"Error: Spreadsheet '{GOOGLE_SHEET_NAME}' not found. Make sure it's shared with the service account email.")
     except Exception as e:
         if 'conn' in locals() and conn: conn.rollback()
-        return f"An error occurred: {e}"
+        print(f"An error occurred during data sync: {e}")
     finally:
         if 'conn' in locals() and conn:
             if 'cursor' in locals(): cursor.close()
             conn.close()
+
+# This part makes the script run continuously when started as a worker
+if _name_ == "_main_":
+    while True:
+        run_update_check()
+        # Wait for 15 minutes before checking again
+        print("Check complete. Sleeping for 15 minutes...")
+        time.sleep(900)
