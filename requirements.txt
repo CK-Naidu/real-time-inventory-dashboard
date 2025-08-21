@@ -3,5 +3,3 @@ python-dotenv
 gunicorn
 psycopg2-binary
 pandas
-gspread
-google-auth-oauthlib
