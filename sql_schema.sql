@@ -1,6 +1,6 @@
 CREATE TABLE Regions (
     RegionID SERIAL PRIMARY KEY,
-    RegionName VARCHAR(50) NOT NULL
+    RegionName VARCHAR(50) NOT NULL UNIQUE
 );
 
 CREATE TABLE Stores (
@@ -10,7 +10,7 @@ CREATE TABLE Stores (
 
 CREATE TABLE Categories (
     CategoryID SERIAL PRIMARY KEY,
-    CategoryName VARCHAR(50) NOT NULL
+    CategoryName VARCHAR(50) NOT NULL UNIQUE
 );
 
 CREATE TABLE Products (
