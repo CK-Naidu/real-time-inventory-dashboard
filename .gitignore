@@ -1,5 +1,5 @@
 .env
-_pycache_/
+__pycache__/
 *.pyc
-last_update.txt
-gcp_credentials.json
+*.log
+data/
