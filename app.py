@@ -2,17 +2,24 @@ import os
 import psycopg2
 from flask import Flask, jsonify, render_template
 from dotenv import load_dotenv
+import traceback
 
 load_dotenv()
-app = Flask(__name__)
 
+import os
+print("Loaded DATABASE_URL:", os.getenv('DATABASE_URL'))
+
+app = Flask(__name__)
 def get_db_connection():
-    return psycopg2.connect(os.getenv('DATABASE_URL'))
+    db_url = os.getenv('DATABASE_URL')
+    if not db_url:
+        raise ValueError("DATABASE_URL environment variable is missing!")
+    return psycopg2.connect(db_url)
+
 
 @app.route("/")
 def dashboard():
     return render_template('index.html')
-
 
 @app.route("/api/kpi/weather-impact")
 def get_weather_impact():
@@ -30,9 +37,9 @@ def get_weather_impact():
         cur.close()
         conn.close()
         return jsonify(result)
-    except Exception as e:
-        print("Error in /api/kpi/weather-impact:", e)
-        return jsonify({"error": str(e)}), 500
+    except Exception:
+        traceback.print_exc()
+        return jsonify({"error": "Internal server error"}), 500
 
 @app.route("/api/kpi/sales-by-region")
 def get_sales_by_region():
@@ -50,10 +57,9 @@ def get_sales_by_region():
         cur.close()
         conn.close()
         return jsonify(result)
-    except Exception as e:
-        print("Error in /api/kpi/sales-by-region:", e)
-        return jsonify({"error": str(e)}), 500
-
+    except Exception:
+        traceback.print_exc()
+        return jsonify({"error": "Internal server error"}), 500
 
 @app.route("/api/kpi/sales-by-category")
 def get_sales_by_category():
@@ -71,10 +77,9 @@ def get_sales_by_category():
         cur.close()
         conn.close()
         return jsonify(result)
-    except Exception as e:
-        print("Error in /api/kpi/sales-by-category:", e)
-        return jsonify({"error": str(e)}), 500
-
+    except Exception:
+        traceback.print_exc()
+        return jsonify({"error": "Internal server error"}), 500
 
 @app.route("/api/kpi/sales-trend")
 def get_sales_trend():
@@ -93,10 +98,9 @@ def get_sales_trend():
         cur.close()
         conn.close()
         return jsonify(result)
-    except Exception as e:
-        print("Error in /api/kpi/sales-trend:", e)
-        return jsonify({"error": str(e)}), 500
-
+    except Exception:
+        traceback.print_exc()
+        return jsonify({"error": "Internal server error"}), 500
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
+    app.run(debug=True, host="0.0.0.0", port=5000)
