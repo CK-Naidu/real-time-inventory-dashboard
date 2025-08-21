@@ -9,16 +9,27 @@ print("Loaded DATABASE_URL:", os.getenv('DATABASE_URL'))
 
 app = Flask(__name__)
 
+import os
+import psycopg2
+from urllib.parse import urlparse
+
 def get_db_connection():
+    DATABASE_URL = os.getenv('DATABASE_URL')
+    if not DATABASE_URL:
+        raise RuntimeError("DATABASE_URL environment variable is not set")
+
+    result = urlparse(DATABASE_URL)
+    
     conn = psycopg2.connect(
-        host="maglev.proxy.rlwy.net",
-        port=44293,
-        database="railway",
-        user="postgres",
-        password="rinXVXLlZHBLydRZvPnNqSDitQHqAXVL",
+        dbname=result.path[1:],
+        user=result.username,
+        password=result.password,
+        host=result.hostname,
+        port=result.port,
         sslmode='require'
     )
     return conn
+
 
 @app.route("/")
 def dashboard():
