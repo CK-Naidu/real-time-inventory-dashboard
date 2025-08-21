@@ -2,19 +2,19 @@ import os
 import psycopg2
 
 def run_sql_file(filename, conn_str):
-    with open(filename, 'r') as f:
-        sql = f.read()
+    with open(filename, 'r') as file:
+        sql = file.read()
+
     conn = psycopg2.connect(conn_str)
-    cur = conn.cursor()
-    cur.execute(sql)
+    cursor = conn.cursor()
+    cursor.execute(sql)
     conn.commit()
-    cur.close()
+    cursor.close()
     conn.close()
-    print(f"Executed {filename} successfully.")
 
 if __name__ == "__main__":
-    connection_url = os.getenv('DATABASE_URL')
-    if not connection_url:
-        print("DATABASE_URL environment variable not set.")
-    else:
-        run_sql_file('sql_schema.sql', connection_url)
+    conn_url = os.getenv('DATABASE_URL')
+    if not conn_url:
+        raise Exception("Set the DATABASE_URL environment variable first")
+    run_sql_file('sql_schema.sql', conn_url)
+    print("Executed sql_schema.sql successfully.")
