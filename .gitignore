@@ -1,12 +1,5 @@
-# Ignore the local environment file
 .env
-
-# Ignore Python cache files
 _pycache_/
 *.pyc
-
-# Ignore the file that tracks the last update time
 last_update.txt
-
-# Ignore local credentials file
 gcp_credentials.json
