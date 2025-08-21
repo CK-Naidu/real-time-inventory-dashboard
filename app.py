@@ -5,17 +5,20 @@ from dotenv import load_dotenv
 import traceback
 
 load_dotenv()
-
-import os
 print("Loaded DATABASE_URL:", os.getenv('DATABASE_URL'))
 
 app = Flask(__name__)
-def get_db_connection():
-    db_url = os.getenv('DATABASE_URL')
-    if not db_url:
-        raise ValueError("DATABASE_URL environment variable is missing!")
-    return psycopg2.connect(db_url)
 
+def get_db_connection():
+    conn = psycopg2.connect(
+        host="maglev.proxy.rlwy.net",
+        port=44293,
+        database="railway",
+        user="postgres",
+        password="rinXVXLlZHBLydRZvPnNqSDitQHqAXVL",
+        sslmode='require'
+    )
+    return conn
 
 @app.route("/")
 def dashboard():
@@ -27,9 +30,9 @@ def get_weather_impact():
         conn = get_db_connection()
         cur = conn.cursor()
         query = """
-            SELECT WeatherCondition, AVG(UnitsSold) AS AvgUnitsSold
+            SELECT weathercondition AS WeatherCondition, AVG(unitssold) AS AvgUnitsSold
             FROM InventoryTransactions
-            GROUP BY WeatherCondition;
+            GROUP BY weathercondition;
         """
         cur.execute(query)
         colnames = [desc[0] for desc in cur.description]
@@ -47,9 +50,9 @@ def get_sales_by_region():
         conn = get_db_connection()
         cur = conn.cursor()
         query = """
-            SELECT Region, SUM(UnitsSold) AS TotalUnitsSold
+            SELECT region, SUM(unitssold) AS TotalUnitsSold
             FROM InventoryTransactions
-            GROUP BY Region;
+            GROUP BY region;
         """
         cur.execute(query)
         colnames = [desc[0] for desc in cur.description]
@@ -67,9 +70,9 @@ def get_sales_by_category():
         conn = get_db_connection()
         cur = conn.cursor()
         query = """
-            SELECT Category, SUM(UnitsSold) AS TotalUnitsSold
+            SELECT category, SUM(unitssold) AS TotalUnitsSold
             FROM InventoryTransactions
-            GROUP BY Category;
+            GROUP BY category;
         """
         cur.execute(query)
         colnames = [desc[0] for desc in cur.description]
@@ -87,10 +90,10 @@ def get_sales_trend():
         conn = get_db_connection()
         cur = conn.cursor()
         query = """
-            SELECT SaleDate, SUM(UnitsSold) AS TotalUnitsSold
+            SELECT date AS SaleDate, SUM(unitssold) AS TotalUnitsSold
             FROM InventoryTransactions
-            GROUP BY SaleDate
-            ORDER BY SaleDate;
+            GROUP BY date
+            ORDER BY date;
         """
         cur.execute(query)
         colnames = [desc[0] for desc in cur.description]
@@ -104,3 +107,4 @@ def get_sales_trend():
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
+
