@@ -3,15 +3,12 @@ import psycopg2
 from flask import Flask, jsonify, render_template
 from dotenv import load_dotenv
 import traceback
+from urllib.parse import urlparse
 
 load_dotenv()
 print("Loaded DATABASE_URL:", os.getenv('DATABASE_URL'))
 
 app = Flask(__name__)
-
-import os
-import psycopg2
-from urllib.parse import urlparse
 
 def get_db_connection():
     DATABASE_URL = os.getenv('DATABASE_URL')
@@ -29,7 +26,6 @@ def get_db_connection():
         sslmode='require'
     )
     return conn
-
 
 @app.route("/")
 def dashboard():
@@ -51,6 +47,7 @@ def get_weather_impact():
         cur.close()
         conn.close()
         return jsonify(result)
+
     except Exception:
         traceback.print_exc()
         return jsonify({"error": "Internal server error"}), 500
@@ -61,9 +58,11 @@ def get_sales_by_region():
         conn = get_db_connection()
         cur = conn.cursor()
         query = """
-            SELECT region, SUM(unitssold) AS TotalUnitsSold
-            FROM InventoryTransactions
-            GROUP BY region;
+            SELECT r.regionname AS region, SUM(i.unitssold) AS totalunitssold
+            FROM InventoryTransactions i
+            JOIN Stores s ON i.storeid = s.storeid
+            JOIN Regions r ON s.regionid = r.regionid
+            GROUP BY r.regionname;
         """
         cur.execute(query)
         colnames = [desc[0] for desc in cur.description]
@@ -71,6 +70,7 @@ def get_sales_by_region():
         cur.close()
         conn.close()
         return jsonify(result)
+
     except Exception:
         traceback.print_exc()
         return jsonify({"error": "Internal server error"}), 500
@@ -81,9 +81,11 @@ def get_sales_by_category():
         conn = get_db_connection()
         cur = conn.cursor()
         query = """
-            SELECT category, SUM(unitssold) AS TotalUnitsSold
-            FROM InventoryTransactions
-            GROUP BY category;
+            SELECT c.categoryname AS category, SUM(i.unitssold) AS totalunitssold
+            FROM InventoryTransactions i
+            JOIN Products p ON i.productid = p.productid
+            JOIN Categories c ON p.categoryid = c.categoryid
+            GROUP BY c.categoryname;
         """
         cur.execute(query)
         colnames = [desc[0] for desc in cur.description]
@@ -91,6 +93,7 @@ def get_sales_by_category():
         cur.close()
         conn.close()
         return jsonify(result)
+
     except Exception:
         traceback.print_exc()
         return jsonify({"error": "Internal server error"}), 500
@@ -101,7 +104,7 @@ def get_sales_trend():
         conn = get_db_connection()
         cur = conn.cursor()
         query = """
-            SELECT date AS SaleDate, SUM(unitssold) AS TotalUnitsSold
+            SELECT date AS SaleDate, SUM(unitssold) AS totalunitssold
             FROM InventoryTransactions
             GROUP BY date
             ORDER BY date;
@@ -112,10 +115,10 @@ def get_sales_trend():
         cur.close()
         conn.close()
         return jsonify(result)
+
     except Exception:
         traceback.print_exc()
         return jsonify({"error": "Internal server error"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
-
