@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!weatherRes.ok) throw new Error(`Weather Impact API error: ${weatherRes.status}`);
     const weatherData = await weatherRes.json();
     if (!Array.isArray(weatherData)) throw new Error('Weather Impact data is not an array');
-    const weatherLabels = weatherData.map(item => item.WeatherCondition);
-    const weatherValues = weatherData.map(item => item.AvgUnitsSold);
+    const weatherLabels = weatherData.map(item => item.weathercondition); // Corrected
+    const weatherValues = weatherData.map(item => item.avgunitsold);      // Corrected
 
     new Chart(document.getElementById('weatherImpactChart'), {
       type: 'bar',
@@ -30,8 +30,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!regionRes.ok) throw new Error(`Sales by Region API error: ${regionRes.status}`);
     const regionData = await regionRes.json();
     if (!Array.isArray(regionData)) throw new Error('Sales by Region data is not an array');
-    const regionLabels = regionData.map(item => item.Region);
-    const regionValues = regionData.map(item => item.TotalUnitsSold);
+    const regionLabels = regionData.map(item => item.region);         // Corrected
+    const regionValues = regionData.map(item => item.totalunitssold); // Corrected
 
     new Chart(document.getElementById('salesByRegionChart'), {
       type: 'pie',
@@ -57,8 +57,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!categoryRes.ok) throw new Error(`Sales by Category API error: ${categoryRes.status}`);
     const categoryData = await categoryRes.json();
     if (!Array.isArray(categoryData)) throw new Error('Sales by Category data is not an array');
-    const categoryLabels = categoryData.map(item => item.Category);
-    const categoryValues = categoryData.map(item => item.TotalUnitsSold);
+    const categoryLabels = categoryData.map(item => item.category);       // Corrected
+    const categoryValues = categoryData.map(item => item.totalunitssold); // Corrected
 
     new Chart(document.getElementById('salesByCategoryChart'), {
       type: 'doughnut',
@@ -84,8 +84,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!trendRes.ok) throw new Error(`Sales Trend API error: ${trendRes.status}`);
     const trendData = await trendRes.json();
     if (!Array.isArray(trendData)) throw new Error('Sales Trend data is not an array');
-    const trendLabels = trendData.map(item => item.SaleDate);
-    const trendValues = trendData.map(item => item.TotalUnitsSold);
+    const trendLabels = trendData.map(item => item.saledate);       // Corrected
+    const trendValues = trendData.map(item => item.totalunitssold); // Corrected
 
     new Chart(document.getElementById('salesTrendChart'), {
       type: 'line',
